@@ -12,7 +12,6 @@ public class Node {
 
     private List<Node> _edges;
     private List<Node> _parents;
-    public Node bestParent;
 
     public Node(int index, double weight) {
         this._index = index;
@@ -22,9 +21,7 @@ public class Node {
     }
 
     public void addEdge(Node edge) {
-//        System.out.println(edge);
         this._edges.add(edge);
-
         edge._parents.add(this);
     }
 
