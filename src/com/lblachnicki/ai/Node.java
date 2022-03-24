@@ -2,6 +2,7 @@ package com.lblachnicki.ai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class Node {
@@ -45,17 +46,19 @@ public class Node {
         return this._edges;
     }
 
-    public void BruteForceHeuristic()
-    {
-        // make sure we're the top node
-        DepthFirst(_weight);
-    }
-
     public double getF() {
         return G + _h;
     }
 
-    private void DepthFirst(double currentWeight)
+    public void precalculate_H0_Heuristic() {
+        if(!_edges.isEmpty()) {
+            System.out.println("NOT USING ARTIFICIAL CHILD!");
+            return;
+        }
+        precalculate_H0_Heuristic(0);
+    }
+
+    private void precalculate_H0_Heuristic(double currentWeight)
     {
         if (_h == 0)
         {
@@ -71,8 +74,12 @@ public class Node {
         }
 
         for (Node p: _parents) {
-            p.DepthFirst(_h);
+            p.precalculate_H0_Heuristic(_h);
         }
+    }
+
+    public void precalculate_random_Heuristic() {
+        _h = new Random(_edges.size()).nextDouble() + 1;
     }
 
     public double getWeight() {
@@ -81,5 +88,9 @@ public class Node {
 
     public boolean hasNext() {
         return this._edges.size() > 0;
+    }
+
+    public void resetHeuristic() {
+        _h = 0;
     }
 }

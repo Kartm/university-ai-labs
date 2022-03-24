@@ -40,7 +40,7 @@ public class Main {
             for (var child : node.getEdges()) {
                 var candidate_best_g = node.G + child.getWeight();
 
-                if(candidate_best_g > child.G) {
+                if(candidate_best_g >= child.G) {
                     // this path to child is better than any previous one. save it
                     bestParents.put(child, node);
                     child.G = candidate_best_g;
@@ -68,8 +68,8 @@ public class Main {
         graphsWithResults.add(new AbstractMap.SimpleEntry<>("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_xlarge_sparse.dag", 29.2775901407003));
 
         List<String[]> table = new ArrayList<>();
-        table.add(new String[]{"file", "h(0) took ns", "traverse h(0) took ns"});
-        table.add(new String[]{"---------", "---------", "---------"});
+        table.add(new String[]{"file", "h(0) took ns", "traverse h(0) took ns", "h(random) took ns", "traverse h(random) took ns"});
+        table.add(new String[]{"---------", "---------", "---------", "---------", "---------"});
 
 
         for (var testCase :
@@ -82,7 +82,7 @@ public class Main {
             var artificialChild = nodes.get(nodes.size() - 1);
 
             long startTime = System.nanoTime();
-            artificialChild.BruteForceHeuristic();
+            artificialChild.precalculate_H0_Heuristic();
             long bruteForceHeuristicTime = System.nanoTime() - startTime;
 
             startTime = System.nanoTime();
@@ -90,22 +90,34 @@ public class Main {
             long bruteForceTraverseTime = System.nanoTime() - startTime;
 
             var totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
-            System.out.println(path);
-//            System.out.println(totalCost);
+            assert (testCase.getValue() - totalCost < 0.0000003);
+
+            nodes.forEach(n -> n.resetHeuristic());
+
+            System.out.println("\n\n\n");
+
+            startTime = System.nanoTime();
+            nodes.forEach(n -> n.precalculate_random_Heuristic());
+            long randomHeuristicTime = System.nanoTime() - startTime;
+            startTime = System.nanoTime();
+            path = Traverse(artificialParent, artificialChild);
+            totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+            assert (testCase.getValue() - totalCost < 0.0000003);
+            long randomTraverseTime = System.nanoTime() - startTime;
 
             table.add(new String[]{
                     filePath.substring(filePath.lastIndexOf("/") + 1),
                     String.valueOf(bruteForceHeuristicTime),
-                    String.valueOf(bruteForceTraverseTime)
+                    String.valueOf(bruteForceTraverseTime),
+                    String.valueOf(randomHeuristicTime),
+                    String.valueOf(randomTraverseTime)
             });
 
-            System.out.println(testCase.getValue());
-            System.out.println(totalCost);
-            assert (testCase.getValue() - totalCost < 0.0000003);
+
         }
 
         for (var row : table) {
-            System.out.format("%-25s%-15s%-15s\n", row);
+            System.out.format("%-25s%-15s%-15s%-15s%-15s\n", row);
         }
     }
 }
