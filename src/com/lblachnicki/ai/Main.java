@@ -1,6 +1,7 @@
 package com.lblachnicki.ai;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static List<Node> Traverse(Node parentNode) {
@@ -34,9 +35,6 @@ public class Main {
             }
         }
 
-        System.out.println(node);
-
-
         // Recreate the best path, going from the last node and it's parents
         List<Node> path = new ArrayList<>();
         while (bestParents.get(node) != null) {
@@ -49,21 +47,37 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        // 1. load file and construct graph
-//        List<Node> nodes = GraphLoader.loadFromFile("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_from_pdf.dag");
-        List<Node> nodes = GraphLoader.loadFromFile("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_medium.dag");
+        List<Map.Entry<String, Double>> graphsWithResults = new ArrayList<>();
+        graphsWithResults.add(new AbstractMap.SimpleEntry<>("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_from_pdf.dag", 1.97));
 
-        var artificialParent = nodes.get(nodes.size() - 2);
-        var artificialChild = nodes.get(nodes.size() - 1);
+        for (var testCase :
+                graphsWithResults) {
+            List<Node> nodes = GraphLoader.loadFromFile(testCase.getKey());
 
-        // 2. precalculate heuristics
-        artificialChild.BruteForceHeuristic();
+            var artificialParent = nodes.get(nodes.size() - 2);
+            var artificialChild = nodes.get(nodes.size() - 1);
 
-        // 4. run A* on all heuristics
-        System.out.println(Traverse(artificialParent));
-        System.out.println(Traverse(artificialParent).stream().mapToDouble(n -> n.getWeight()).sum());
+            long startTime = System.nanoTime();
+            artificialChild.BruteForceHeuristic();
+            long estimatedTime = System.nanoTime() - startTime;
+//            System.out.println(estimatedTime);
+            System.out.println(TimeUnit.NANOSECONDS.toMillis(estimatedTime));
 
 
-        // 5. benchmark results
+            startTime = System.nanoTime();
+            var path = Traverse(artificialParent);
+            estimatedTime = System.nanoTime() - startTime;
+//            System.out.println(estimatedTime);
+            System.out.println(TimeUnit.NANOSECONDS.toMillis(estimatedTime));
+
+
+            var totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+//            System.out.println(path);
+            System.out.println(totalCost);
+
+            assert(totalCost == testCase.getValue());
+        }
+
+
     }
 }
