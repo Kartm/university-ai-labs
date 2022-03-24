@@ -39,6 +39,7 @@ public class Node {
                 ", _weight=" + _weight +
                 ", G=" + G +
                 ", _h=" + _h +
+                ", F=" + getF() +
 //                ", _edges=" + _edges +
                 "}\n";
     }

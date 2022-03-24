@@ -7,22 +7,25 @@ public class Main {
     public static List<Node> Traverse(Node parentNode) {
         LinkedHashMap<Node, Node> bestParents = new LinkedHashMap<>();
 
-        List<Node> open = new ArrayList<>();
+        PriorityQueue<Node> open = new PriorityQueue((Comparator<Node>) (a, b) -> {
+            // nodes with biggest F are at the top
+            if (a.getF() < b.getF()) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
 
         parentNode.G = parentNode.getWeight();
         open.add(parentNode);
-        var node = open.get(0);
 
-        while (node.hasNext()) {
+        Node node = null;
+
+        while (!open.isEmpty()) {
             // Find the Node with biggest F
-            node = open.get(0);
+            node = open.remove();
 
-            for (var n : open) {
-                if (n.getF() < node.getF()) continue;
-                node = n;
-            }
-
-            open.remove(node);
+            // todo escape case? no children == goal reached :)))
 
             for (var child : node.getEdges()) {
                 var currentTime = node.G + node.getWeight();
@@ -86,8 +89,6 @@ public class Main {
 
             table.add(new String[]{
                     filePath.substring(filePath.lastIndexOf("/") + 1),
-//                    String.valueOf(TimeUnit.NANOSECONDS.toMillis(bruteForceHeuristicTime)),
-//                    String.valueOf(TimeUnit.NANOSECONDS.toMillis(bruteForceTraverseTime)),
                     String.valueOf(bruteForceHeuristicTime),
                     String.valueOf(bruteForceTraverseTime)
             });
