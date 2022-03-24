@@ -4,49 +4,55 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    public static List<Node> Traverse(Node parentNode) {
+    public static List<Node> Traverse(Node startNode, Node goalNode) {
         LinkedHashMap<Node, Node> bestParents = new LinkedHashMap<>();
 
-        PriorityQueue<Node> open = new PriorityQueue((Comparator<Node>) (a, b) -> {
-            // nodes with biggest F are at the top
-            if (a.getF() < b.getF()) {
-                return -1;
-            } else {
-                return 1;
-            }
-        });
+        ArrayList<Node> open = new ArrayList<>();
 
-        parentNode.G = parentNode.getWeight();
-        open.add(parentNode);
-
-        Node node = null;
+        startNode.G = startNode.getWeight();
+        open.add(startNode);
 
         while (!open.isEmpty()) {
-            // Find the Node with biggest F
-            node = open.remove();
+            Node node = open.get(0);
 
-            // todo escape case? no children == goal reached :)))
+            for (Node n : open){
+                if (n.getF() < node.getF())
+                    continue;
+                node = n;
+            }
+
+            if(node == goalNode) {
+                // recreate the best path
+                List<Node> path = new ArrayList<>();
+
+                Node current = goalNode;
+                while (bestParents.get(current) != null) {
+                    path.add(current);
+                    current = bestParents.get(current);
+                }
+                Collections.reverse(path);
+
+                return path;
+            }
+
+            open.remove(node);
 
             for (var child : node.getEdges()) {
-                var currentTime = node.G + node.getWeight();
-                // If the time to get to child is smaller than current, continue checking, this is not the one
-                if (currentTime < child.G) continue;
-                bestParents.put(child, node);
-                child.G = currentTime;
-                if (open.contains(child)) continue;
-                open.add(child);
+                var candidate_best_g = node.G + child.getWeight();
+
+                if(candidate_best_g > child.G) {
+                    // this path to child is better than any previous one. save it
+                    bestParents.put(child, node);
+                    child.G = candidate_best_g;
+
+                    if(!open.contains(child)) {
+                        open.add(child);
+                    }
+                }
             }
         }
 
-        // Recreate the best path, going from the last node and it's parents
-        List<Node> path = new ArrayList<>();
-        while (bestParents.get(node) != null) {
-            path.add(node);
-            node = bestParents.get(node);
-        }
-        Collections.reverse(path);
-
-        return path;
+        return null;
     }
 
     public static void main(String[] args) {
@@ -80,11 +86,11 @@ public class Main {
             long bruteForceHeuristicTime = System.nanoTime() - startTime;
 
             startTime = System.nanoTime();
-            var path = Traverse(artificialParent);
+            var path = Traverse(artificialParent, artificialChild);
             long bruteForceTraverseTime = System.nanoTime() - startTime;
 
             var totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
-//            System.out.println(path);
+            System.out.println(path);
 //            System.out.println(totalCost);
 
             table.add(new String[]{
@@ -93,6 +99,8 @@ public class Main {
                     String.valueOf(bruteForceTraverseTime)
             });
 
+            System.out.println(testCase.getValue());
+            System.out.println(totalCost);
             assert (testCase.getValue() - totalCost < 0.0000003);
         }
 
