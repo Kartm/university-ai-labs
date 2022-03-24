@@ -7,8 +7,11 @@ import java.util.stream.Collectors;
 public class Node {
     private int _index;
     private double _weight;
+    public double G;
+    private double _h;
 
     private List<Node> _edges;
+    public Node bestParent;
 
     public Node(int index, double weight) {
         this._index = index;
@@ -17,6 +20,7 @@ public class Node {
     }
 
     public void addEdge(Node edge) {
+//        System.out.println(edge);
         this._edges.add(edge);
     }
 
@@ -29,11 +33,51 @@ public class Node {
         return "Node{" +
                 "_index=" + _index +
                 ", _weight=" + _weight +
-                ", _edges=" + _edges.stream().map(e -> e._index).collect(Collectors.toList()) +
+                ", G=" + G +
+                ", _h=" + _h +
+                ", _edges=" + _edges +
                 '}';
     }
 
     public List<Node> getEdges() {
         return this._edges;
+    }
+
+    public void BruteForceHeuristic()
+    {
+        // make sure we're the top node
+        DepthFirst(_weight);
+    }
+
+    public double getF() {
+        return G + _h;
+    }
+
+    private void DepthFirst(double currentWeight)
+    {
+        if (_h == 0)
+        {
+            _h = currentWeight + this._weight;
+        }
+        else if (_h - this._weight < currentWeight)
+        {
+            _h = currentWeight + this._weight;
+        }
+        else
+        {
+            return;
+        }
+
+        for (Node n: _edges) {
+            n.DepthFirst(_h);
+        }
+    }
+
+    public double getWeight() {
+        return this._weight;
+    }
+
+    public boolean hasNext() {
+        return this._edges.size() > 0;
     }
 }
