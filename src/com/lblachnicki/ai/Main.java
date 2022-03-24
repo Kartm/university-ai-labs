@@ -76,51 +76,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        try {
-//            String path = "/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_from_pdf.dag";
-            String path = "/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_medium.dag";
-            Scanner input = new Scanner(new FileReader(path));
+//        List<Node> nodes = GraphLoader.loadFromFile("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_from_pdf.dag");
+        List<Node> nodes = GraphLoader.loadFromFile("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_medium.dag");
 
-            int numberOfNodes = Integer.parseInt(input.nextLine());
-
-            List<Node> nodes = new ArrayList<>();
-
-            for(int i = 0; i < numberOfNodes; i++) {
-                nodes.add(new Node(i, Double.parseDouble(input.nextLine())));
-            }
-
-            for(int i = 0; i < numberOfNodes; i++) {
-                var line = input.nextLine();
-
-                for (String field : line.split(" ")) {
-                    int destNodeIndex = Integer.parseInt(field);
-
-                    // no successors
-                    if(destNodeIndex == -1) {
-                        continue;
-                    }
-
-                    nodes.get(i).addEdge(nodes.get(destNodeIndex));
-                }
-            }
-
-
-            // create artificial child
-            // find all nodes without parent
-            var allDestinationIndexes = nodes.stream().map(n -> n.getEdges()).flatMap(List::stream).map(e -> e.getIndex()).collect(Collectors.toList());
-            var allNodesWithoutParent = nodes.stream().filter(n -> !allDestinationIndexes.contains(n.getIndex())).collect(Collectors.toList());
-            var artificialParent = new Node(numberOfNodes, 0);
-            allNodesWithoutParent.forEach(n -> artificialParent.addEdge(n));
-            nodes.add(artificialParent);
-
-            // find all nodes without children
-            var nodesWithoutChildren = nodes.stream().filter(n -> n.getEdges().size() == 0).collect(Collectors.toList());
-            var artificialChild = new Node(numberOfNodes + 1, 0);
-            nodesWithoutChildren.forEach(n -> n.addEdge(artificialChild));
-            nodes.add(artificialChild);
-
-
-
+        var artificialParent = nodes.get(nodes.size() - 2);
+        var artificialChild = nodes.get(nodes.size() - 1);
             // run heuristic
             artificialChild.BruteForceHeuristic();
 
@@ -145,9 +105,6 @@ public class Main {
 
 
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
         // write your code here
 
