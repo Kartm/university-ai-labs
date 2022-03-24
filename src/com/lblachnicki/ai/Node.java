@@ -78,8 +78,8 @@ public class Node {
         }
     }
 
-    public void precalculate_random_Heuristic() {
-        _h = new Random(_edges.size()).nextDouble() + 1;
+    public void precalculate_random_Heuristic(Random random) {
+        _h = random.nextDouble();
     }
 
     public double getWeight() {

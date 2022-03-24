@@ -71,6 +71,7 @@ public class Main {
         table.add(new String[]{"file", "h(0) took ns", "traverse h(0) took ns", "h(random) took ns", "traverse h(random) took ns"});
         table.add(new String[]{"---------", "---------", "---------", "---------", "---------"});
 
+        Random random = new Random();
 
         for (var testCase :
                 graphsWithResults) {
@@ -97,7 +98,7 @@ public class Main {
             System.out.println("\n\n\n");
 
             startTime = System.nanoTime();
-            nodes.forEach(n -> n.precalculate_random_Heuristic());
+            nodes.forEach(n -> n.precalculate_random_Heuristic(random));
             long randomHeuristicTime = System.nanoTime() - startTime;
             startTime = System.nanoTime();
             path = Traverse(artificialParent, artificialChild);
