@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
-    public static List<Node> Traverse(Node parentNode, Node childNode)
+    public static List<Node> Traverse(Node parentNode)
     {
         List<Node> open = new ArrayList<>();
 
@@ -21,11 +21,18 @@ public class Main {
         {
             // Find the Node with biggest F
             node = open.get(0);
+//            System.out.println(node.getIndex());
+
             for(var n: open)
             {
-                if (n.getF() > node.getF()) continue;
+//                if (n.getF() > node.getF()) continue;
+                if (n.getF() < node.getF()) continue;
                 node = n;
             }
+
+//            System.out.println(node.getIndex());
+
+            // todo escape case
 
             open.remove(node);
 
@@ -42,7 +49,7 @@ public class Main {
             }
         }
 
-
+        System.out.println(node);
 
 
 //        stopWatch.Stop();
@@ -51,20 +58,27 @@ public class Main {
 
         // Create the path, going from the last node and it's parents
         List<Node> path = new ArrayList<>();
-        node = childNode;
+//        node = childNode;
         while (node.bestParent != null)
         {
             path.add(node);
             node = node.bestParent;
+
+//            if(node.getIndex() == 61) {
+//                System.out.println(node);
+//            }
         }
-//        Collections.reverse(path);
+        Collections.reverse(path);
+
+
 
         return path;
     }
 
     public static void main(String[] args) {
         try {
-            String path = "/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_from_pdf.dag";
+//            String path = "/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_from_pdf.dag";
+            String path = "/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_medium.dag";
             Scanner input = new Scanner(new FileReader(path));
 
             int numberOfNodes = Integer.parseInt(input.nextLine());
@@ -90,6 +104,7 @@ public class Main {
                 }
             }
 
+
             // create artificial child
             // find all nodes without parent
             var allDestinationIndexes = nodes.stream().map(n -> n.getEdges()).flatMap(List::stream).map(e -> e.getIndex()).collect(Collectors.toList());
@@ -107,15 +122,21 @@ public class Main {
 
 
             // run heuristic
-            artificialParent.BruteForceHeuristic();
+            artificialChild.BruteForceHeuristic();
 
 //            for (Node n: nodes
 //            ) {
 //                System.out.println(n);
 //            }
 
-            System.out.println(Traverse(artificialParent, artificialChild).stream().map(n -> n.getIndex()).collect(Collectors.toList()));
-            System.out.println(Traverse(artificialParent, artificialChild).stream().mapToDouble(n -> n.getWeight()).sum());
+//            System.out.println(Traverse(artificialParent, artificialChild).stream().map(n -> n.getIndex()).collect(Collectors.toList()));
+            System.out.println(Traverse(artificialParent));
+            System.out.println(Traverse(artificialParent).stream().mapToDouble(n -> n.getWeight()).sum());
+
+
+//            var node_52 = nodes.stream().
+
+//            System.out.println(nodes);
 
 //            for (Node n: nodes
 //            ) {

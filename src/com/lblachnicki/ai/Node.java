@@ -11,17 +11,21 @@ public class Node {
     private double _h;
 
     private List<Node> _edges;
+    private List<Node> _parents;
     public Node bestParent;
 
     public Node(int index, double weight) {
         this._index = index;
         this._weight = weight;
         this._edges = new ArrayList<>();
+        this._parents = new ArrayList<>();
     }
 
     public void addEdge(Node edge) {
 //        System.out.println(edge);
         this._edges.add(edge);
+
+        edge._parents.add(this);
     }
 
     public int getIndex() {
@@ -35,8 +39,8 @@ public class Node {
                 ", _weight=" + _weight +
                 ", G=" + G +
                 ", _h=" + _h +
-                ", _edges=" + _edges +
-                '}';
+//                ", _edges=" + _edges +
+                "}\n";
     }
 
     public List<Node> getEdges() {
@@ -68,8 +72,8 @@ public class Node {
             return;
         }
 
-        for (Node n: _edges) {
-            n.DepthFirst(_h);
+        for (Node p: _parents) {
+            p.DepthFirst(_h);
         }
     }
 
