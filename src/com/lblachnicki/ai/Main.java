@@ -67,12 +67,12 @@ public class Main {
         graphsWithResults.add(new AbstractMap.SimpleEntry<>("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_xlarge_sparse.dag", 29.2775901407003));
 
         List<String[]> table = new ArrayList<>();
-        table.add(new String[]{"file", "gen h(0) [ns]", "travel h(0) [ns]", "gen h(rand) [ns]", "travel h(rand) [ns]", "gen h(child_n) [ns]", "travel h(child_n) [n]", "gen h(parent_n) [ns]", "travel h(parent_n) [n]", "gen h(zero) [ns]", "travel h(zero) [n]"});
-        table.add(new String[]{"---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------"});
+//        table.add(new String[]{"file", "gen h(0) [ns]", "travel h(0) [ns]", "gen h(rand) [ns]", "travel h(rand) [ns]", "gen h(child_n) [ns]", "travel h(child_n) [n]", "gen h(parent_n) [ns]", "travel h(parent_n) [n]", "gen h(zero) [ns]", "travel h(zero) [n]"});
+//        table.add(new String[]{"---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------"});
 
         Random random = new Random();
 
-        for(int i = 0; i < 2; i++) {
+        for(int i = 0; i < 1; i++) {
             for (var testCase :
                     graphsWithResults) {
                 var filePath = testCase.getKey();
@@ -158,7 +158,8 @@ public class Main {
         }
 
         for (var row : table) {
-            System.out.format("%-25s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", row);
+//            System.out.format("%-25s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", row);
+            System.out.println(String.join("\t", row));
         }
     }
 }
