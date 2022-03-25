@@ -1,7 +1,6 @@
 package com.lblachnicki.ai;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static List<Node> Traverse(Node startNode, Node goalNode) {
