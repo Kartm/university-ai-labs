@@ -88,8 +88,8 @@ public class Node {
         _h = _parents.size();
     }
 
-    public void precalculate_node_index_Heuristic() {
-        _h = 1;
+    public void precalculate_zero_Heuristic() {
+        _h = 0;
     }
 
     public double getWeight() {

@@ -68,7 +68,7 @@ public class Main {
         graphsWithResults.add(new AbstractMap.SimpleEntry<>("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_xlarge_sparse.dag", 29.2775901407003));
 
         List<String[]> table = new ArrayList<>();
-        table.add(new String[]{"file", "gen h(0) [ns]", "travel h(0) [ns]", "gen h(rand) [ns]", "travel h(rand) [ns]", "gen h(child_n) [ns]", "travel h(child_n) [n]", "gen h(parent_n) [ns]", "travel h(parent_n) [n]", "gen h(static) [ns]", "travel h(static) [n]"});
+        table.add(new String[]{"file", "gen h(0) [ns]", "travel h(0) [ns]", "gen h(rand) [ns]", "travel h(rand) [ns]", "gen h(child_n) [ns]", "travel h(child_n) [n]", "gen h(parent_n) [ns]", "travel h(parent_n) [n]", "gen h(zero) [ns]", "travel h(zero) [n]"});
         table.add(new String[]{"---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------"});
 
         Random random = new Random();
@@ -97,8 +97,6 @@ public class Main {
                 assert (testCase.getValue() - totalCost < 0.0000003);
 
                 nodes.forEach(n -> n.resetHeuristic());
-
-                System.out.println("\n\n\n");
 
                 startTime = System.nanoTime();
                 nodes.forEach(n -> n.precalculate_random_Heuristic(random));
@@ -134,13 +132,13 @@ public class Main {
                 nodes.forEach(n -> n.resetHeuristic());
 
                 startTime = System.nanoTime();
-                nodes.forEach(n -> n.precalculate_node_index_Heuristic());
-                long countNodeIndexHeuristicTime = System.nanoTime() - startTime;
+                nodes.forEach(n -> n.precalculate_zero_Heuristic());
+                long countZeroHeuristicTime = System.nanoTime() - startTime;
                 startTime = System.nanoTime();
                 path = Traverse(artificialParent, artificialChild);
                 totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
                 assert (testCase.getValue() - totalCost < 0.0000003);
-                long countNodeIndexTraverseTime = System.nanoTime() - startTime;
+                long countZeroTraverseTime = System.nanoTime() - startTime;
 
                 table.add(new String[]{
                         filePath.substring(filePath.lastIndexOf("/") + 1),
@@ -152,8 +150,8 @@ public class Main {
                         String.valueOf(countEdgeTraverseTime),
                         String.valueOf(countParentHeuristicTime),
                         String.valueOf(countParentTraverseTime),
-                        String.valueOf(countNodeIndexHeuristicTime),
-                        String.valueOf(countNodeIndexTraverseTime)
+                        String.valueOf(countZeroHeuristicTime),
+                        String.valueOf(countZeroTraverseTime)
                 });
 
 
