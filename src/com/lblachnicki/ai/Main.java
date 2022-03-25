@@ -68,57 +68,100 @@ public class Main {
         graphsWithResults.add(new AbstractMap.SimpleEntry<>("/Users/lblachnicki/Documents/Repositories/university-ai-labs/data/test_xlarge_sparse.dag", 29.2775901407003));
 
         List<String[]> table = new ArrayList<>();
-        table.add(new String[]{"file", "h(0) took ns", "traverse h(0) took ns", "h(random) took ns", "traverse h(random) took ns"});
-        table.add(new String[]{"---------", "---------", "---------", "---------", "---------"});
+        table.add(new String[]{"file", "gen h(0) [ns]", "travel h(0) [ns]", "gen h(rand) [ns]", "travel h(rand) [ns]", "gen h(child_n) [ns]", "travel h(child_n) [n]", "gen h(parent_n) [ns]", "travel h(parent_n) [n]", "gen h(static) [ns]", "travel h(static) [n]"});
+        table.add(new String[]{"---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------", "---------"});
 
         Random random = new Random();
 
-        for (var testCase :
-                graphsWithResults) {
-            var filePath = testCase.getKey();
-            List<Node> nodes = GraphLoader.loadFromFile(filePath);
+        for(int i = 0; i < 2; i++) {
+            for (var testCase :
+                    graphsWithResults) {
+                var filePath = testCase.getKey();
+                List<Node> nodes = GraphLoader.loadFromFile(filePath);
 
 
-            var artificialParent = nodes.get(nodes.size() - 2);
-            var artificialChild = nodes.get(nodes.size() - 1);
+                var artificialParent = nodes.get(nodes.size() - 2);
+                var artificialChild = nodes.get(nodes.size() - 1);
 
-            long startTime = System.nanoTime();
-            artificialChild.precalculate_H0_Heuristic();
-            long bruteForceHeuristicTime = System.nanoTime() - startTime;
+                nodes.forEach(n -> n.resetHeuristic());
 
-            startTime = System.nanoTime();
-            var path = Traverse(artificialParent, artificialChild);
-            long bruteForceTraverseTime = System.nanoTime() - startTime;
+                long startTime = System.nanoTime();
+                artificialChild.precalculate_H0_Heuristic();
+                long bruteForceHeuristicTime = System.nanoTime() - startTime;
 
-            var totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
-            assert (testCase.getValue() - totalCost < 0.0000003);
+                startTime = System.nanoTime();
+                var path = Traverse(artificialParent, artificialChild);
+                long bruteForceTraverseTime = System.nanoTime() - startTime;
 
-            nodes.forEach(n -> n.resetHeuristic());
+                var totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+                assert (testCase.getValue() - totalCost < 0.0000003);
 
-            System.out.println("\n\n\n");
+                nodes.forEach(n -> n.resetHeuristic());
 
-            startTime = System.nanoTime();
-            nodes.forEach(n -> n.precalculate_random_Heuristic(random));
-            long randomHeuristicTime = System.nanoTime() - startTime;
-            startTime = System.nanoTime();
-            path = Traverse(artificialParent, artificialChild);
-            totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
-            assert (testCase.getValue() - totalCost < 0.0000003);
-            long randomTraverseTime = System.nanoTime() - startTime;
+                System.out.println("\n\n\n");
 
-            table.add(new String[]{
-                    filePath.substring(filePath.lastIndexOf("/") + 1),
-                    String.valueOf(bruteForceHeuristicTime),
-                    String.valueOf(bruteForceTraverseTime),
-                    String.valueOf(randomHeuristicTime),
-                    String.valueOf(randomTraverseTime)
-            });
+                startTime = System.nanoTime();
+                nodes.forEach(n -> n.precalculate_random_Heuristic(random));
+                long randomHeuristicTime = System.nanoTime() - startTime;
+                startTime = System.nanoTime();
+                path = Traverse(artificialParent, artificialChild);
+                totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+                assert (testCase.getValue() - totalCost < 0.0000003);
+                long randomTraverseTime = System.nanoTime() - startTime;
+
+                nodes.forEach(n -> n.resetHeuristic());
+
+                startTime = System.nanoTime();
+                nodes.forEach(n -> n.precalculate_edge_count_Heuristic());
+                long countEdgeHeuristicTime = System.nanoTime() - startTime;
+                startTime = System.nanoTime();
+                path = Traverse(artificialParent, artificialChild);
+                totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+                assert (testCase.getValue() - totalCost < 0.0000003);
+                long countEdgeTraverseTime = System.nanoTime() - startTime;
+
+                nodes.forEach(n -> n.resetHeuristic());
+
+                startTime = System.nanoTime();
+                nodes.forEach(n -> n.precalculate_parent_count_Heuristic());
+                long countParentHeuristicTime = System.nanoTime() - startTime;
+                startTime = System.nanoTime();
+                path = Traverse(artificialParent, artificialChild);
+                totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+                assert (testCase.getValue() - totalCost < 0.0000003);
+                long countParentTraverseTime = System.nanoTime() - startTime;
+
+                nodes.forEach(n -> n.resetHeuristic());
+
+                startTime = System.nanoTime();
+                nodes.forEach(n -> n.precalculate_node_index_Heuristic());
+                long countNodeIndexHeuristicTime = System.nanoTime() - startTime;
+                startTime = System.nanoTime();
+                path = Traverse(artificialParent, artificialChild);
+                totalCost = path.stream().mapToDouble(n -> n.getWeight()).sum();
+                assert (testCase.getValue() - totalCost < 0.0000003);
+                long countNodeIndexTraverseTime = System.nanoTime() - startTime;
+
+                table.add(new String[]{
+                        filePath.substring(filePath.lastIndexOf("/") + 1),
+                        String.valueOf(bruteForceHeuristicTime),
+                        String.valueOf(bruteForceTraverseTime),
+                        String.valueOf(randomHeuristicTime),
+                        String.valueOf(randomTraverseTime),
+                        String.valueOf(countEdgeHeuristicTime),
+                        String.valueOf(countEdgeTraverseTime),
+                        String.valueOf(countParentHeuristicTime),
+                        String.valueOf(countParentTraverseTime),
+                        String.valueOf(countNodeIndexHeuristicTime),
+                        String.valueOf(countNodeIndexTraverseTime)
+                });
 
 
+            }
         }
 
         for (var row : table) {
-            System.out.format("%-25s%-15s%-15s%-15s%-15s\n", row);
+            System.out.format("%-25s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s%-20s\n", row);
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.lblachnicki.ai;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Node {
@@ -80,6 +78,18 @@ public class Node {
 
     public void precalculate_random_Heuristic(Random random) {
         _h = random.nextDouble();
+    }
+
+    public void precalculate_edge_count_Heuristic() {
+        _h = _edges.size();
+    }
+
+    public void precalculate_parent_count_Heuristic() {
+        _h = _parents.size();
+    }
+
+    public void precalculate_node_index_Heuristic() {
+        _h = 1;
     }
 
     public double getWeight() {
